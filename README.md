@@ -4,5 +4,6 @@ This is a Java Code Editor which serves basic functions such as importing and ex
 
 Currently Working on:
 1. ~~Undo and Redo~~
-2. Syntax Highlighting
-3. Code Execution
+2. ~~Line Numbers~~
+3. Syntax Highlighting
+4. Code Execution
