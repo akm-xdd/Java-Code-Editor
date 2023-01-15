@@ -7,9 +7,12 @@ import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoManager;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 
 public class JavaCodeEditor extends JFrame {
@@ -23,14 +26,17 @@ public class JavaCodeEditor extends JFrame {
 
     public JavaCodeEditor() {
         // Set the title and layout of the frame
-        Image icon = Toolkit.getDefaultToolkit().getImage("C:\\Users\\ctfua\\Desktop\\icon.png");
+        JFrame frame = new JFrame();
+
+        Image icon = Toolkit.getDefaultToolkit().getImage("icon.png");
         setIconImage(icon);
-        setTitle("Java Code Editor");
+        setTitle("PRISTINE TEXT");
         setLayout(new BorderLayout());
 
         // Create the text area and add it to the frame
-        textArea = new JTextArea("//THIS IS PRISTINE Start writing your code below this line");
+        textArea = new JTextArea("//THIS IS PRISTINE \nDelete this text or start writing  below this line\n");
         textArea.setFont(textArea.getFont().deriveFont(Font.BOLD));
+        textArea.setFont(new Font("Comic Sans MS", Font.BOLD, 12));
 
         add(new JScrollPane(textArea), BorderLayout.CENTER);
         lineNumberArea = new JTextArea("1");
@@ -110,6 +116,48 @@ public class JavaCodeEditor extends JFrame {
         JMenuItem aboutItem = new JMenuItem("About");
         aboutMenu.add(aboutItem);
 
+        JMenuItem visitUsItem = new JMenuItem("Visit Us");
+        aboutMenu.add(visitUsItem);
+        visitUsItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showOptionDialog(frame,
+                        "You can learn more about the project at my Github Repo!\nPlease visit us for more information.",
+                        "Visit Us",
+                        JOptionPane.DEFAULT_OPTION,
+                        JOptionPane.INFORMATION_MESSAGE,
+                        null,
+                        new Object[]{"OK", "Take me there"},
+                        "OK");
+            }
+        });
+
+        visitUsItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int choice = JOptionPane.showOptionDialog(frame,
+                        "You can learn more about the project at my Github Repo!\nPlease visit us for more information.",
+                        "Visit Us",
+                        JOptionPane.DEFAULT_OPTION,
+                        JOptionPane.INFORMATION_MESSAGE,
+                        null,
+                        new Object[]{"OK", "Take me there"},
+                        "OK");
+
+                if (choice == 1) {
+                    // "Take me there" button clicked, open the website in the default browser
+                    try {
+                        Desktop.getDesktop().browse(new URI("https://github.com/akm-xdd/Java-Code-Editor"));
+                    } catch (URISyntaxException | IOException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        });
+
+
+
+
         JMenuItem switchTheme = new JMenuItem("Switch Theme");
         aboutMenu.add(switchTheme);
 
@@ -167,11 +215,11 @@ public class JavaCodeEditor extends JFrame {
         // Set the file filter to only show .java files
         fileChooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
             public boolean accept(File f) {
-                return f.getName().toLowerCase().endsWith(".java") || f.isDirectory();
+                return f.getName().toLowerCase().endsWith(".txt") || f.isDirectory();
             }
 
             public String getDescription() {
-                return "Java source files (.java)";
+                return "Text Files (.txt)";
             }
         });
 
@@ -205,11 +253,11 @@ public class JavaCodeEditor extends JFrame {
         // Set the file filter to only show .java files
         fileChooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
             public boolean accept(File f) {
-                return f.getName().toLowerCase().endsWith(".java") || f.isDirectory();
+                return f.getName().toLowerCase().endsWith(".txt") || f.isDirectory();
             }
 
             public String getDescription() {
-                return "Java source files (.java)";
+                return "Text Files (.txt)";
             }
         });
 
@@ -220,8 +268,8 @@ public class JavaCodeEditor extends JFrame {
             File file = fileChooser.getSelectedFile();
 
             // Make sure the file has the .java extension
-            if (!file.getName().toLowerCase().endsWith(".java")) {
-                file = new File(file.getAbsolutePath() + ".java");
+            if (!file.getName().toLowerCase().endsWith(".txt")) {
+                file = new File(file.getAbsolutePath() + ".txt");
             }
 
             try {
@@ -257,7 +305,7 @@ public class JavaCodeEditor extends JFrame {
     }
 
     private void about() {
-        JOptionPane.showMessageDialog(this, "THIS IS PRISTINE!!!", "About", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, "This is Pristine, a simple text editor.\nLearn more on Github at @ax ", "About", JOptionPane.INFORMATION_MESSAGE);
 
     }
 
