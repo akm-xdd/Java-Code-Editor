@@ -1,6 +1,6 @@
 # Java-Text-Editor
 
-This is a Java Text Editor which serves basic functions such as importing and exporting .java files, Find and Replace and 2 different themes.
+This is a Java Text Editor which serves basic functions such as importing and exporting .txt files, Find and Replace and 2 different themes.
 
 Currently Working on:
 1. ~~Undo and Redo~~
