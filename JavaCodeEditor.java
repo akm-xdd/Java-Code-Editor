@@ -27,7 +27,7 @@ public class JavaCodeEditor extends JFrame {
     public JavaCodeEditor() {
         // Set the title and layout of the frame
         JFrame frame = new JFrame();
-
+        
         Image icon = Toolkit.getDefaultToolkit().getImage("icon.png");
         setIconImage(icon);
         setTitle("PRISTINE TEXT");
@@ -190,45 +190,84 @@ public class JavaCodeEditor extends JFrame {
         am.put("redo", redoAction);
         textArea.addMouseWheelListener(e -> {
             if (e.isControlDown()) {
-                int zoom = e.getWheelRotation();
-                if (zoom > 0) {
-                    textArea.setFont(textArea.getFont().deriveFont(textArea.getFont().getSize() - 2f));
-                    lineNumberArea.setFont(lineNumberArea.getFont().deriveFont(lineNumberArea.getFont().getSize() - 2f));
-                } else {
-                    textArea.setFont(textArea.getFont().deriveFont(textArea.getFont().getSize() + 2f));
-                    lineNumberArea.setFont(lineNumberArea.getFont().deriveFont(lineNumberArea.getFont().getSize() + 2f));
+                float zoomFactor = 1.1f; // Adjust zoom factor as needed
+                Font currentFont = textArea.getFont();
+                float newSize = currentFont.getSize2D();
+                if (e.getWheelRotation() < 0) { // Wheel moved UP - Zoom in
+                    newSize *= zoomFactor;
+                } else if (e.getWheelRotation() > 0) { // Wheel moved DOWN - Zoom out
+                    newSize /= zoomFactor;
                 }
+                // Apply the new size to both the text area and the line number area
+                Font newFont = currentFont.deriveFont(newSize);
+                textArea.setFont(newFont);
+                lineNumberArea.setFont(newFont);
+                
+                // Recalculate line numbers due to potential change in line height
+                updateLineNumbers();
+            } else {
+                // Allow natural scrolling when not zooming
+                // (Implementation as per the previous response)
             }
         });
+    }
+        
+        // Implement the updateLineNumbers method to recalculate and update line numbers
+        private void updateLineNumbers() {
+            Element root = textArea.getDocument().getDefaultRootElement();
+            StringBuilder lineNumbers = new StringBuilder();
+            for (int i = 0; i < root.getElementCount(); i++) {
+                lineNumbers.append(i + 1).append(System.getProperty("line.separator"));
+            }
+            lineNumberArea.setText(lineNumbers.toString());
+        
+    
+        
+        // Ensure the updateLineNumbers method is called after any text change in the text area
+        textArea.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                updateLineNumbers();
+            }
+        
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                updateLineNumbers();
+            }
+        
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                updateLineNumbers();
+            }
+        });
+        
+        
+        
 
     }
 
-    public static void main(String[] args) {
-        JavaCodeEditor editor = new JavaCodeEditor();
-        editor.setVisible(true);
-    }
-
+    
     private void openFile() {
         // Create a file chooser
         fileChooser = new JFileChooser();
-
+        
         // Set the file filter to only show .java files
         fileChooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
             public boolean accept(File f) {
                 return f.getName().toLowerCase().endsWith(".txt") || f.isDirectory();
             }
-
+            
             public String getDescription() {
                 return "Text Files (.txt)";
             }
         });
-
+        
         // Show the file chooser and check the user's selection
         int result = fileChooser.showOpenDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
             // Get the selected file
             File file = fileChooser.getSelectedFile();
-
+            
             try {
                 // Read the contents of the file into the text area
                 BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -243,35 +282,35 @@ public class JavaCodeEditor extends JFrame {
                 JOptionPane.showMessageDialog(this, "Error reading file", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
-
+        
     }
-
+    
     private void saveFile() {
         // Create a file chooser
         fileChooser = new JFileChooser();
-
+        
         // Set the file filter to only show .java files
         fileChooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
             public boolean accept(File f) {
                 return f.getName().toLowerCase().endsWith(".txt") || f.isDirectory();
             }
-
+            
             public String getDescription() {
                 return "Text Files (.txt)";
             }
         });
-
+        
         // Show the file chooser and check the user's selection
         int result = fileChooser.showSaveDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
             // Get the selected file
             File file = fileChooser.getSelectedFile();
-
+            
             // Make sure the file has the .java extension
             if (!file.getName().toLowerCase().endsWith(".txt")) {
                 file = new File(file.getAbsolutePath() + ".txt");
             }
-
+            
             try {
                 // Write the contents of the text area to the file
                 BufferedWriter writer = new BufferedWriter(new FileWriter(file));
@@ -282,7 +321,7 @@ public class JavaCodeEditor extends JFrame {
             }
         }
     }
-
+    
     private void findAndReplace() {
         String findText = JOptionPane.showInputDialog(this, "Enter the text to find:");
         if (findText == null) {
@@ -292,7 +331,7 @@ public class JavaCodeEditor extends JFrame {
         if (replaceText == null) {
             return;
         }
-
+        
         int count = 0;
         int index = textArea.getText().indexOf(findText);
         while (index != -1) {
@@ -300,20 +339,20 @@ public class JavaCodeEditor extends JFrame {
             textArea.replaceRange(replaceText, index, index + findText.length());
             index = textArea.getText().indexOf(findText, index + replaceText.length());
         }
-
+        
         JOptionPane.showOptionDialog(this, "We made " + count + " replacements!", "Results", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, new Object[]{}, null);
     }
-
+    
     private void about() {
         JOptionPane.showMessageDialog(this, "This is Pristine, a simple text editor.\nLearn more on Github at @ax ", "About", JOptionPane.INFORMATION_MESSAGE);
-
+        
     }
-
+    
     protected void update() {
         undoAction.setEnabled(undo.canUndo());
         redoAction.setEnabled(undo.canRedo());
     }
-
+    
     private class UndoAction extends AbstractAction {
         public void actionPerformed(ActionEvent e) {
             try {
@@ -324,7 +363,7 @@ public class JavaCodeEditor extends JFrame {
             update();
         }
     }
-
+    
     private class RedoAction extends AbstractAction {
         public void actionPerformed(ActionEvent e) {
             try {
@@ -334,7 +373,11 @@ public class JavaCodeEditor extends JFrame {
             }
             update();
         }
-
+        
+    }
+    public static void main(String[] args) {
+        JavaCodeEditor editor = new JavaCodeEditor();
+        editor.setVisible(true);
     }
 }
 
