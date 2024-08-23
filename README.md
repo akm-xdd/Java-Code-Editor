@@ -8,6 +8,9 @@ Currently Working on:
 3. Font Functions
 
 
+## There is a whole lot you can do with this. Fairly simple but much useful.
+
+
 # Screenshots
 ![image](https://github.com/user-attachments/assets/afe62709-6b49-49a5-9306-d376048b1087)
 
